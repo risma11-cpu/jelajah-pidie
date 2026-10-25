@@ -34,7 +34,7 @@ class RecommendationService
 
         if ($rows->isNotEmpty()) {
             $found = Destination::query()
-                ->with('category')
+                ->with(['category', 'coverPhoto'])
                 ->withApprovedRatings()
                 ->whereIn('id', $rows->pluck('similar_destination_id')->all())
                 ->get()
@@ -59,7 +59,7 @@ class RecommendationService
         }
 
         $items = Destination::query()
-            ->with('category')
+            ->with(['category', 'coverPhoto'])
             ->withApprovedRatings()
             ->where('category_id', $destination->category_id)
             ->whereKeyNot($destination->id)

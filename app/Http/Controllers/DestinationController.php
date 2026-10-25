@@ -29,7 +29,7 @@ class DestinationController extends Controller
         $maxPrice = is_numeric($maxPrice) ? max(0, (int) $maxPrice) : null;
 
         $query = Destination::query()
-            ->with('category')
+            ->with(['category', 'coverPhoto'])
             ->withApprovedRatings()
             ->when($q !== '', fn ($builder) => $builder->where('name', 'like', '%'.$q.'%'))
             ->when($categoryId > 0, fn ($builder) => $builder->where('category_id', $categoryId))

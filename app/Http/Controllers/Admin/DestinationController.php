@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Destination;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class DestinationController extends Controller
@@ -21,7 +22,7 @@ class DestinationController extends Controller
         $categoryId = is_numeric($categoryId) ? (int) $categoryId : 0;
 
         $destinations = Destination::query()
-            ->with('category')
+            ->with(['category', 'coverPhoto'])
             ->when($q !== '', fn ($query) => $query->where('name', 'like', '%'.$q.'%'))
             ->when($categoryId > 0, fn ($query) => $query->where('category_id', $categoryId))
             ->orderBy('name')
@@ -47,11 +48,13 @@ class DestinationController extends Controller
 
         return redirect()
             ->route('admin.destinations.edit', $destination)
-            ->with('success', 'Destinasi ditambahkan.');
+            ->with('success', 'Destinasi ditambahkan. Anda bisa menambahkan foto di bawah.');
     }
 
     public function edit(Destination $destination): View
     {
+        $destination->load('photos');
+
         return view('admin.destinations.edit', $this->formData($destination));
     }
 
@@ -64,7 +67,10 @@ class DestinationController extends Controller
 
     public function destroy(Destination $destination): RedirectResponse
     {
+        $directory = 'destinations/'.$destination->id;
+
         $destination->delete();
+        Storage::disk('public')->deleteDirectory($directory);
 
         return redirect()
             ->route('admin.destinations.index')

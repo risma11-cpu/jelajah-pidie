@@ -173,3 +173,10 @@ a { color: inherit; }
     .y2k-marquee span { animation: none; padding-left: 0; }
     .btn { transition: none; }
 }
+/* Foto destinasi (admin) */
+.photo-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); }
+.photo-item {
+    display: grid; gap: 0.5rem; padding: 0.6rem; border: 3px solid var(--ink); border-radius: 12px;
+    background: var(--silver); box-shadow: 3px 3px 0 var(--ink);
+}
+.photo-item img { width: 100%; height: 8rem; object-fit: cover; border: 2px solid var(--ink); border-radius: 8px; }

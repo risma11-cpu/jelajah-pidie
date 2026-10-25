@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DestinationController as AdminDestinationController;
+use App\Http\Controllers\Admin\PhotoController as AdminPhotoController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DestinationController;
@@ -56,6 +57,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         ->except('show')
         ->parameters(['destinasi' => 'destination'])
         ->names('destinations');
+
+    Route::post('/destinasi/{destination}/foto', [AdminPhotoController::class, 'store'])
+        ->whereNumber('destination')
+        ->name('photos.store');
+    Route::patch('/foto/{photo}', [AdminPhotoController::class, 'update'])
+        ->whereNumber('photo')
+        ->name('photos.update');
+    Route::delete('/foto/{photo}', [AdminPhotoController::class, 'destroy'])
+        ->whereNumber('photo')
+        ->name('photos.destroy');
 
     Route::resource('kategori', AdminCategoryController::class)
         ->only(['index', 'store', 'update', 'destroy'])

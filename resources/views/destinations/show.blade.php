@@ -5,8 +5,15 @@
 @section('content')
     <p class="muted text-sm" style="margin-bottom:0.75rem"><a href="{{ route('destinations.index') }}">&larr; Kembali ke daftar destinasi</a></p>
 
-    <section class="detail-hero thumb-{{ $destination->category->slug_name ?? 'umum' }}">
-        <span class="emoji" aria-hidden="true">{!! $destination->category->icon ?? '&#127796;' !!}</span>
+        @php
+        $cover = $destination->photos->first();
+    @endphp
+
+    <section class="detail-hero thumb-{{ $destination->category->slug_name ?? 'umum' }} {{ $cover ? 'has-photo' : '' }}"
+             @if ($cover) style="background-image: url('{{ asset('storage/'.$cover->image) }}')" @endif>
+        @unless ($cover)
+            <span class="emoji" aria-hidden="true">{!! $destination->category->icon ?? '&#127796;' !!}</span>
+        @endunless
         <span class="badge">{{ $destination->category->name ?? '-' }}</span>
         <span class="badge">&#128205; {{ $destination->district }}</span>
         <h1>{{ $destination->name }}</h1>

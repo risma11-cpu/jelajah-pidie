@@ -13,7 +13,7 @@ class FavoriteController extends Controller
     {
         $destinations = $request->user()
             ->favorites()
-            ->with('category')
+            ->with(['category', 'coverPhoto'])
             ->withApprovedRatings()
             ->orderBy('name')
             ->paginate(9);

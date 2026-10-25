@@ -11,7 +11,7 @@ class HomeController extends Controller
     public function index(): View
     {
         $featured = Destination::query()
-            ->with('category')
+            ->with(['category', 'coverPhoto'])
             ->withApprovedRatings()
             ->orderByRaw('avg_rating IS NULL')
             ->orderByDesc('avg_rating')
