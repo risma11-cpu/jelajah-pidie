@@ -3,27 +3,31 @@
 @section('title', $destination->name)
 
 @section('content')
-    <p class="muted text-sm" style="margin-bottom:0.75rem"><a href="{{ route('destinations.index') }}">&larr; Kembali ke daftar destinasi</a></p>
+    <p class="back-link"><a href="{{ route('destinations.index') }}"><x-icon name="arrow-left" :size="16" /> Kembali ke daftar destinasi</a></p>
 
-        @php
+    @php
         $cover = $destination->photos->first();
     @endphp
 
     <section class="detail-hero thumb-{{ $destination->category->slug_name ?? 'umum' }} {{ $cover ? 'has-photo' : '' }}"
              @if ($cover) style="background-image: url('{{ asset('storage/'.$cover->image) }}')" @endif>
         @unless ($cover)
-            <span class="emoji" aria-hidden="true">{!! $destination->category->icon ?? '&#127796;' !!}</span>
+            <span class="thumb-icon" aria-hidden="true"><x-icon :name="$destination->category->icon_name ?? 'compass'" :size="120" /></span>
         @endunless
-        <span class="badge">{{ $destination->category->name ?? '-' }}</span>
-        <span class="badge">&#128205; {{ $destination->district }}</span>
-        <h1>{{ $destination->name }}</h1>
-        <p><x-rating :avg="$destination->avg_rating" :count="$destination->reviews_count" /></p>
+        <div class="detail-hero-body">
+            <div class="flex flex-wrap gap-2">
+                <span class="badge">{{ $destination->category->name ?? '-' }}</span>
+                <span class="badge badge-light"><x-icon name="pin" :size="14" /> {{ $destination->district }}</span>
+            </div>
+            <h1>{{ $destination->name }}</h1>
+            <p><x-rating :avg="$destination->avg_rating" :count="$destination->reviews_count" /></p>
+        </div>
     </section>
 
     <div class="detail-grid">
         <div class="stack">
             <section class="card">
-                <h2 style="font-size:1.2rem;margin-bottom:0.5rem">Tentang destinasi</h2>
+                <h2 class="card-title">Tentang destinasi</h2>
                 @if ($destination->description)
                     <p>{!! nl2br(e($destination->description)) !!}</p>
                 @else
@@ -32,7 +36,7 @@
             </section>
 
             <section class="card">
-                <h2 style="font-size:1.2rem;margin-bottom:0.75rem">Informasi</h2>
+                <h2 class="card-title">Informasi</h2>
                 <dl class="info-list">
                     <div class="info-item"><dt>Kategori</dt><dd>{{ $destination->category->name ?? '-' }}</dd></div>
                     <div class="info-item"><dt>Kecamatan</dt><dd>{{ $destination->district }}</dd></div>
@@ -43,7 +47,7 @@
                     <div class="info-item"><dt>Aksesibilitas</dt><dd>{{ $destination->accessibility ?? 'Belum diketahui' }}</dd></div>
                 </dl>
 
-                <h3 style="font-size:1rem;margin:1.1rem 0 0.5rem">Aktivitas</h3>
+                <h3 class="sub-title">Aktivitas</h3>
                 @if (count($destination->activities_list))
                     <div class="chips">
                         @foreach ($destination->activities_list as $item)
@@ -54,7 +58,7 @@
                     <p class="muted">Belum diketahui.</p>
                 @endif
 
-                <h3 style="font-size:1rem;margin:1.1rem 0 0.5rem">Fasilitas</h3>
+                <h3 class="sub-title">Fasilitas</h3>
                 @if (count($destination->facilities_list))
                     <div class="chips">
                         @foreach ($destination->facilities_list as $item)
@@ -68,17 +72,22 @@
 
             @if ($destination->photos->isNotEmpty())
                 <section class="card">
-                    <h2 style="font-size:1.2rem;margin-bottom:0.75rem">Foto</h2>
+                    <h2 class="card-title">Foto</h2>
                     <div class="gallery">
                         @foreach ($destination->photos as $photo)
-                            <img src="{{ asset('storage/'.$photo->image) }}" alt="{{ $photo->caption ?? $destination->name }}" loading="lazy">
+                            <figure>
+                                <img src="{{ asset('storage/'.$photo->image) }}" alt="{{ $photo->caption ?? $destination->name }}" loading="lazy">
+                                @if ($photo->caption)
+                                    <figcaption>{{ $photo->caption }}</figcaption>
+                                @endif
+                            </figure>
                         @endforeach
                     </div>
                 </section>
             @endif
 
             <section class="card">
-                <h2 style="font-size:1.2rem;margin-bottom:0.5rem">Ulasan</h2>
+                <h2 class="card-title">Ulasan</h2>
 
                 @forelse ($reviews as $review)
                     <div class="review">
@@ -86,7 +95,11 @@
                             <strong>{{ $review->user->name ?? 'Pengguna' }}</strong>
                             <span class="muted text-sm">{{ $review->created_at?->translatedFormat('d F Y') }}</span>
                         </div>
-                        <p><span class="star">{!! str_repeat('&#9733;', $review->rating) !!}</span><span class="muted">{!! str_repeat('&#9734;', 5 - $review->rating) !!}</span></p>
+                        <p class="stars" aria-label="Rating {{ $review->rating }} dari 5">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <x-icon name="star" :size="16" :filled="$i <= $review->rating" :class="$i <= $review->rating ? 'star' : 'star-off'" />
+                            @endfor
+                        </p>
                         @if ($review->comment)
                             <p>{{ $review->comment }}</p>
                         @endif
@@ -101,11 +114,15 @@
 
         <aside class="stack">
             <section class="card">
-                <h2 style="font-size:1.2rem;margin-bottom:0.6rem">Lokasi dan rute</h2>
+                <h2 class="card-title">Lokasi dan rute</h2>
                 @if ($destination->hasCoordinates())
+                 <div id="map" class="dest-map"
+         data-lat="{{ $destination->latitude }}"
+         data-lng="{{ $destination->longitude }}"
+         data-name="{{ $destination->name }}"></div>
                     <a class="btn btn-primary" target="_blank" rel="noopener"
                        href="https://www.google.com/maps/dir/?api=1&destination={{ $destination->latitude }},{{ $destination->longitude }}">
-                        Petunjuk rute (Google Maps)
+                        <x-icon name="map" :size="18" /> Petunjuk rute (Google Maps)
                     </a>
                 @else
                     <p class="muted">Koordinat belum diverifikasi, sehingga peta dan rute belum ditampilkan.</p>
@@ -113,15 +130,16 @@
             </section>
 
             <section class="card">
-                <h2 style="font-size:1.2rem;margin-bottom:0.6rem">Favorit</h2>
+                <h2 class="card-title">Favorit</h2>
                 @auth
                     <form method="POST" action="{{ route('favorites.toggle', $destination) }}">
                         @csrf
                         <button type="submit" class="btn {{ $isFavorite ? 'btn-ghost' : 'btn-sun' }}">
+                            <x-icon name="heart" :size="18" :filled="$isFavorite" />
                             @if ($isFavorite)
                                 Hapus dari favorit
                             @else
-                                &#9829; Simpan ke favorit
+                                Simpan ke favorit
                             @endif
                         </button>
                     </form>
@@ -131,7 +149,7 @@
             </section>
 
             <section class="card">
-                <h2 style="font-size:1.2rem;margin-bottom:0.6rem">Tulis ulasan</h2>
+                <h2 class="card-title">Tulis ulasan</h2>
                 @auth
                     @if ($myReview)
                         <p class="text-sm" style="margin-bottom:0.75rem">
@@ -180,7 +198,7 @@
             </section>
         </aside>
     </div>
-    
+
     @if ($recommendation['items']->isNotEmpty())
         <section style="margin-top:2.2rem">
             <h2 class="section-title" style="margin-top:0">
@@ -199,5 +217,25 @@
                 @endforeach
             </div>
         </section>
+    @endif
+        @if ($destination->hasCoordinates())
+        @push('scripts')
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const el = document.getElementById('map');
+                    const pos = [parseFloat(el.dataset.lat), parseFloat(el.dataset.lng)];
+                    const map = L.map(el).setView(pos, 15);
+
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }).addTo(map);
+
+                    L.marker(pos).addTo(map).bindPopup(el.dataset.name);
+                });
+            </script>
+        @endpush
     @endif
 @endsection

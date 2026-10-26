@@ -19,7 +19,7 @@
                 <div class="field">
                     <label class="label" for="photos">Pilih foto</label>
                     <input id="photos" class="input" type="file" name="photos[]" multiple accept="image/jpeg,image/png,image/webp" required>
-                    <p class="hint">JPG, PNG, atau WEBP. Maks. 5 file sekali unggah, 2 MB per foto, total 10 foto per destinasi.</p>
+                    <p class="hint">JPG, PNG, atau WEBP. Maks. 5 file sekali unggah, 20 MB per foto, total 10 foto per destinasi.</p>
                     @error('photos')<p class="field-error">{{ $message }}</p>@enderror
                     @error('photos.*')<p class="field-error">{{ $message }}</p>@enderror
                 </div>

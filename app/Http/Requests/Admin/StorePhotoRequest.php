@@ -15,7 +15,7 @@ class StorePhotoRequest extends FormRequest
     {
         return [
             'photos' => ['required', 'array', 'min:1', 'max:5'],
-            'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:20480'],
             'caption' => ['nullable', 'string', 'max:255'],
         ];
     }

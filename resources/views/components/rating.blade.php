@@ -2,9 +2,9 @@
 
 @if ($avg && $count)
     <span class="rating">
-        <span class="star">&#9733;</span>
-        {{ number_format((float) $avg, 1, ',', '.') }}
-        <span class="muted">({{ $count }})</span>
+        <x-icon name="star" :size="16" :filled="true" class="star" />
+        <strong>{{ number_format((float) $avg, 1, ',', '.') }}</strong>
+        <span class="muted">({{ $count }} ulasan)</span>
     </span>
 @else
     <span class="muted">Belum ada ulasan</span>

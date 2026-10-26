@@ -55,5 +55,6 @@
         </svg>
         &copy; {{ date('Y') }} {{ config('app.name') }} &middot; Wisata Kabupaten Pidie, Aceh
     </footer>
+        @stack('scripts')
 </body>
 </html>

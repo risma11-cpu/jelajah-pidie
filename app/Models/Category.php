@@ -29,18 +29,18 @@ class Category extends Model
     }
 
     /**
-     * Ikon emoji (HTML entity) untuk kategori.
+     * Nama ikon SVG (lihat components/icon.blade.php) untuk kategori.
      */
-    protected function icon(): Attribute
+    protected function iconName(): Attribute
     {
         return Attribute::get(fn () => match (Str::slug($this->name)) {
-            'alam' => '&#127958;',
-            'sejarah' => '&#127963;',
-            'religi' => '&#128332;',
-            'rekreasi' => '&#127906;',
-            'kuliner' => '&#127836;',
-            'edukasi' => '&#128218;',
-            default => '&#127796;',
+            'alam' => 'mountain',
+            'sejarah' => 'landmark',
+            'religi' => 'moon',
+            'rekreasi' => 'sun',
+            'kuliner' => 'utensils',
+            'edukasi' => 'book',
+            default => 'compass',
         });
     }
 }
