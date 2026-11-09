@@ -1,0 +1,78 @@
+/* =====================================================================
+   NAVBAR HAMBURGER (HP) - hanya berlaku di website publik (body.site)
+===================================================================== */
+
+/* Tombol hamburger disembunyikan di layar lebar */
+body.site .nav-toggle { display: none; }
+
+@media (max-width: 820px) {
+    body.site .nav-pill,
+    body.site .site-header-inner { position: relative; }
+
+    body.site .nav-pill { flex-wrap: nowrap; padding-right: 0.6rem; }
+    body.site .site-header-inner.has-toggle { grid-template-columns: 1fr auto auto; }
+
+    /* Tombol hamburger */
+    body.site .nav-toggle {
+        display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+        flex: none; width: 2.8rem; height: 2.8rem; margin-left: auto; padding: 0; cursor: pointer;
+        color: var(--ink); background: #fff; border-radius: 50%;
+        border: 1px solid rgba(12, 27, 41, 0.14); box-shadow: 0 6px 16px rgba(27, 111, 184, 0.16);
+        transition: background 0.2s, transform 0.2s;
+    }
+    body.site .nav-toggle:hover { background: #eaf6ff; }
+    body.site .nav-toggle:active { transform: scale(0.94); }
+    body.site .nav-toggle:focus-visible { outline: 3px solid rgba(45, 143, 227, 0.45); outline-offset: 2px; }
+
+    body.site .nav-toggle-bar {
+        display: block; width: 1.15rem; height: 2.5px; border-radius: 2px; background: currentColor;
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s;
+    }
+    body.site .nav-toggle.is-open .nav-toggle-bar:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    body.site .nav-toggle.is-open .nav-toggle-bar:nth-child(2) { opacity: 0; transform: scaleX(0.3); }
+    body.site .nav-toggle.is-open .nav-toggle-bar:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+    /* Menu jadi panel yang turun di bawah navbar */
+    body.site .nav-pill .nav,
+    body.site .site-header-inner .nav {
+        position: absolute; top: calc(100% + 0.6rem); left: 0; right: 0; z-index: 60;
+        display: flex; flex-direction: column; align-items: stretch; flex-wrap: nowrap; gap: 0.25rem;
+        margin: 0; padding: 0.6rem; overflow: visible;
+        background: rgba(255, 255, 255, 0.97); border: 1px solid rgba(255, 255, 255, 0.95); border-radius: 1.6rem;
+        box-shadow: 0 24px 60px rgba(27, 111, 184, 0.25);
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transform: translateY(-10px) scale(0.98); transform-origin: top right;
+        transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.3s;
+    }
+    body.site .nav-pill .nav.is-open,
+    body.site .site-header-inner .nav.is-open {
+        opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+        transition-delay: 0s;
+    }
+
+    /* Isi menu */
+    body.site .nav .nav-link {
+        display: block; width: 100%; padding: 0.85rem 1rem; border-radius: 1rem;
+        font-size: 1rem; text-align: left;
+    }
+    body.site .nav .nav-link.is-active { background: #eaf6ff; border-color: transparent; box-shadow: none; }
+    body.site .nav form { margin: 0; }
+    body.site .nav .btn { width: 100%; margin-top: 0.25rem; padding: 0.85rem 1rem; }
+
+    /* Item menu muncul bergantian */
+    body.site .nav.is-open > * { animation: jpNavItem 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+    body.site .nav.is-open > *:nth-child(2) { animation-delay: 0.04s; }
+    body.site .nav.is-open > *:nth-child(3) { animation-delay: 0.08s; }
+    body.site .nav.is-open > *:nth-child(4) { animation-delay: 0.12s; }
+    body.site .nav.is-open > *:nth-child(5) { animation-delay: 0.16s; }
+    body.site .nav.is-open > *:nth-child(6) { animation-delay: 0.2s; }
+    @keyframes jpNavItem { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.site .nav-pill .nav,
+    body.site .site-header-inner .nav,
+    body.site .nav-toggle,
+    body.site .nav-toggle-bar { transition: none; }
+    body.site .nav.is-open > * { animation: none; }
+}

@@ -9,11 +9,13 @@
         $cover = $destination->photos->first();
     @endphp
 
-    <section class="detail-hero thumb-{{ $destination->category->slug_name ?? 'umum' }} {{ $cover ? 'has-photo' : '' }}"
-             @if ($cover) style="background-image: url('{{ asset('storage/'.$cover->image) }}')" @endif>
-        @unless ($cover)
+    <section class="detail-hero thumb-{{ $destination->category->slug_name ?? 'umum' }} {{ $cover ? 'has-photo' : '' }}">
+        @if ($cover)
+            <img class="detail-hero-img" src="{{ asset('storage/'.$cover->image) }}" alt="" width="1280" height="720"
+                 sizes="(min-width: 1312px) 1280px, 100vw" loading="eager" fetchpriority="high" decoding="async">
+        @else
             <span class="thumb-icon" aria-hidden="true"><x-icon :name="$destination->category->icon_name ?? 'compass'" :size="120" /></span>
-        @endunless
+        @endif
         <div class="detail-hero-body">
             <div class="flex flex-wrap gap-2">
                 <span class="badge">{{ $destination->category->name ?? '-' }}</span>
@@ -220,21 +222,41 @@
     @endif
         @if ($destination->hasCoordinates())
         @push('scripts')
-            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            {{-- Leaflet dimuat hanya saat peta hampir terlihat di layar, jadi halaman tidak menunggu pustaka pihak ketiga --}}
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const el = document.getElementById('map');
-                    const pos = [parseFloat(el.dataset.lat), parseFloat(el.dataset.lng)];
-                    const map = L.map(el).setView(pos, 15);
+                (function () {
+                    var el = document.getElementById('map');
+                    if (!el) return;
 
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }).addTo(map);
+                    function start() {
+                        var css = document.createElement('link');
+                        css.rel = 'stylesheet';
+                        css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                        document.head.appendChild(css);
 
-                    L.marker(pos).addTo(map).bindPopup(el.dataset.name);
-                });
+                        var js = document.createElement('script');
+                        js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                        js.async = true;
+                        js.onload = function () {
+                            var pos = [parseFloat(el.dataset.lat), parseFloat(el.dataset.lng)];
+                            var map = L.map(el).setView(pos, 15);
+                            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            }).addTo(map);
+                            L.marker(pos).addTo(map).bindPopup(el.dataset.name);
+                        };
+                        document.head.appendChild(js);
+                    }
+
+                    if ('IntersectionObserver' in window) {
+                        new IntersectionObserver(function (entries, observer) {
+                            if (entries[0].isIntersecting) { observer.disconnect(); start(); }
+                        }, { rootMargin: '400px' }).observe(el);
+                    } else {
+                        start();
+                    }
+                })();
             </script>
         @endpush
     @endif

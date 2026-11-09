@@ -16,7 +16,7 @@ class HomeController extends Controller
             ->orderByRaw('avg_rating IS NULL')
             ->orderByDesc('avg_rating')
             ->orderBy('id')
-            ->limit(6)
+            ->limit(18)
             ->get();
 
         $categories = Category::query()

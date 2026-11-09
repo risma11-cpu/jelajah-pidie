@@ -6,7 +6,7 @@
     <span class="hand">akun kamu</span>
     <h1 class="section-title" style="margin-top:0">Profil Saya</h1>
 
-    <div class="grid-cards" style="grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))">
+    <div class="grid-cards" style="grid-template-columns:repeat(auto-fit,minmax(min(20rem,100%),1fr))">
         <section class="card">
             <h2 style="font-size:1.2rem;margin-bottom:0.75rem">Data akun</h2>
             <form method="POST" action="{{ route('profile.update') }}">
